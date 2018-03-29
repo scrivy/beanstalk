@@ -1,6 +1,7 @@
 package beanstalk
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -45,6 +46,15 @@ func NewConn(conn io.ReadWriteCloser) *Conn {
 // and then returns a new Conn for the connection.
 func Dial(network, addr string) (*Conn, error) {
 	c, err := net.Dial(network, addr)
+	if err != nil {
+		return nil, err
+	}
+	return NewConn(c), nil
+}
+
+func DialContext(ctx context.Context, network, addr string) (*Conn, error) {
+	d := &net.Dialer{}
+	c, err := d.DialContext(ctx, network, addr)
 	if err != nil {
 		return nil, err
 	}
